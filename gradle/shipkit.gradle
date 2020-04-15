@@ -1,22 +1,24 @@
 shipkit {
-    gitHub.repository = "magneticflux-/classpath-resource-extractor"
+    gitHub.repository = 'magneticflux-/classpath-resource-extractor'
 
-    gitHub.readOnlyAuthToken = "0036558481e1d3e998659374a3942d9186b7ca6b"
+    gitHub.readOnlyAuthToken = '0036558481e1d3e998659374a3942d9186b7ca6b'
 
-    gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
+    gitHub.writeAuthToken = System.getenv('GH_WRITE_TOKEN')
 }
 
 allprojects {
-    plugins.withId("org.shipkit.bintray") {
+    plugins.withId('org.shipkit.bintray') {
         bintray {
             user = 'magneticflux'
-            key = System.getenv("BINTRAY_API_KEY")
+            key = System.getenv('BINTRAY_API_KEY')
 
             pkg {
                 repo = 'maven'
                 name = 'classpath-resource-extractor'
                 licenses = ['LGPL-3.0']
                 labels = ['jvm', 'java', 'classpath', 'resource', 'extractor', 'classpath-resource', 'resource-extractor']
+                githubRepo = 'magneticflux-/classpath-resource-extractor'
+                githubReleaseNotesFile = 'docs/release-notes.md'
                 vcsUrl = 'https://github.com/magneticflux-/classpath-resource-extractor.git'
             }
         }
