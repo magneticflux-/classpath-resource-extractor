@@ -6,12 +6,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Utilities for visiting and extracting things on the classpath.
  */
 public class ClasspathUtils {
+
     public static Path extractResourcesToTempDirectory(String source, String prefix, ClassLoader loader) throws IOException {
         Path tempFile = Files.createTempDirectory(prefix);
         deleteOnExit(tempFile);
@@ -77,7 +81,7 @@ public class ClasspathUtils {
 
         Path path;
         if (fs.provider().getScheme().equals("jar")) {
-            // Custom URI parsing here because of JDK bug
+            // Custom URI parsing here because of a JDK bug
             String spec = uri.getSchemeSpecificPart();
             int sep = spec.lastIndexOf("!/");
             if (sep == -1)
@@ -92,7 +96,7 @@ public class ClasspathUtils {
         if (uris.size() <= 1) {
             visitor.accept(path);
         } else {
-            try (FileSystem newFs = FileSystems.newFileSystem(path)) {
+            try (FileSystem newFs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
                 visitUriRecursionHelper(newFs, uris.subList(1, uris.size()), visitor);
             }
         }
