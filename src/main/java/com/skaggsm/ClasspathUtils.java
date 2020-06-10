@@ -111,10 +111,11 @@ public class ClasspathUtils {
         uris.add(uri);
         while (!uri.getScheme().equals("file")) {
             String end = uri.getRawSchemeSpecificPart();
+            String newUri = end.substring(0, end.lastIndexOf("!/"));
             try {
-                uri = new URI(end.substring(0, end.lastIndexOf("!/")));
+                uri = new URI(newUri);
             } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
+                throw new IllegalStateException(String.format("Unexpectedly formed an invalid URI: \"%s\"", newUri), e);
             }
             uris.add(uri);
         }
@@ -142,7 +143,7 @@ public class ClasspathUtils {
             try {
                 uri = new URI("jar:" + uri);
             } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
+                throw new IllegalStateException(String.format("Unexpectedly formed an invalid URI: \"jar:%s\"", uri), e);
             }
             jars++;
         }
