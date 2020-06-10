@@ -17,24 +17,38 @@ import java.util.Objects;
 public class ClasspathUtils {
 
     public static Path extractResourcesToTempDirectory(String source, String prefix, ClassLoader loader) throws IOException {
-        Path tempFile = Files.createTempDirectory(prefix);
-        deleteOnExit(tempFile);
+        Path tempFile = createDeletableTempDirectory(prefix);
         extractResources(source, tempFile, loader);
         return tempFile;
     }
 
     public static Path extractResourcesToTempDirectory(String source, String prefix, Class<?> klass) throws IOException {
-        return extractResourcesToTempDirectory(source, prefix, klass.getClassLoader());
+        Path tempFile = createDeletableTempDirectory(prefix);
+        extractResources(source, tempFile, klass);
+        return tempFile;
+    }
+
+    private static Path createDeletableTempDirectory(String prefix) throws IOException {
+        Path tempFile = Files.createTempDirectory(prefix);
+        deleteOnExit(tempFile);
+        return tempFile;
     }
 
     public static void extractResources(String source, Path targetPath, Class<?> klass) throws IOException {
-        extractResources(source, targetPath, klass.getClassLoader());
+        URL resource = klass.getResource(source);
+        Objects.requireNonNull(resource, String.format("Resource %s was not found in Class %s", source, klass));
+
+        internalExtractResources(resource, targetPath);
     }
 
     public static void extractResources(String source, Path targetPath, ClassLoader loader) throws IOException {
         URL resource = loader.getResource(source);
         Objects.requireNonNull(resource, String.format("Resource %s was not found in ClassLoader %s", source, loader));
 
+        internalExtractResources(resource, targetPath);
+    }
+
+    private static void internalExtractResources(URL resource, Path targetPath) throws IOException {
         try {
             visitUriAsPath(
                     resource.toURI(),
@@ -61,7 +75,7 @@ public class ClasspathUtils {
         }
     }
 
-    public static void deleteOnExit(Path path) {
+    private static void deleteOnExit(Path path) {
         path.toFile().deleteOnExit();
     }
 
