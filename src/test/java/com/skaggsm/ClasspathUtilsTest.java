@@ -1,6 +1,8 @@
 package com.skaggsm;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,7 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by Mitchell Skaggs on 4/15/2020.
@@ -33,6 +36,7 @@ class ClasspathUtilsTest {
     }
 
     @Test
+    @EnabledForJreRange(min = JRE.JAVA_11)
     void given_nested_zip_when_visited_success() throws URISyntaxException, IOException {
         URI zip1 = Objects.requireNonNull(this.getClass().getClassLoader().getResource("test_zip.zip")).toURI();
         ClasspathUtils.visitUriAsPath(zip1, (ClasspathUtils.PathConsumer<IOException>) path -> assertTrue(Files.exists(path), "Outer zip exists"));
